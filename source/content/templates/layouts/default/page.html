@@ -6,6 +6,7 @@
 
 <!DOCTYPE html>
 <html lang="{{ language_code }}">
+
 <head>
 
     <meta charset="utf-8">
@@ -25,16 +26,17 @@
 
 <body>
 
-<nav class="navbar navbar-expand-md navbar-dark bg-dark static-top">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark static-to">
+    <a class="navbar-brand" href="{% url 'index' %}">Trang chủ</a>
 
-    <a class="navbar-brand" href="{% url 'index' %}">{% trans 'Home' %}</a>
-
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
+        aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
         <ul class="navbar-nav mr-auto">
+
             {% if request.user.is_authenticated %}
                 {% if request.user.is_superuser %}
                     <li class="nav-item">
@@ -42,51 +44,55 @@
                     </li>
                 {% endif %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'accounts:change_password' %}">{% trans 'Change password' %}</a>
+                    <a class="nav-link" href="#">Lịch sử giao dịch</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'accounts:change_profile' %}">{% trans 'Change profile' %}</a>
+                    <a class="nav-link" href="#">Tài Sản</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'accounts:change_email' %}">{% trans 'Change email' %}</a>
+                <li class="nav-item dropdown mr-auto">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Cài đặt
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <a class="dropdown-item" href="{% url 'accounts:change_password' %}">Đổi mật khẩu</a>
+                        <a class="dropdown-item" href="{% url 'accounts:change_profile' %}">Thông tin cá nhân</a>
+                        <a class="dropdown-item" href="{% url 'accounts:change_email' %}">Đổi email</a>
+                        <a class="dropdown-item" href="{% url 'accounts:log_out' %}">Đăng xuất</a>
+                    </div>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'accounts:log_out' %}">{% trans 'Log out' %}</a>
-                </li>
+
             {% else %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'accounts:log_in' %}">{% trans 'Log in' %}</a>
+                    <a class="nav-link" href="{% url 'accounts:log_in' %}">Đăng nhập</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'accounts:sign_up' %}">{% trans 'Create an account' %}</a>
+                    <a class="nav-link" href="{% url 'accounts:sign_up' %}">Đăng ký</a>
                 </li>
             {% endif %}
-        </ul>
 
-        <ul class="navbar-nav">
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'change_language' %}">{% trans 'Change language' %}</a>
-            </li>
+            
         </ul>
     </div>
-
 </nav>
 
-<div class="container-fluid mt-3">
 
-    {% bootstrap_messages %}
+    <div class="container-fluid mt-3">
 
-    {% block content %}
+        {% bootstrap_messages %}
+
+        {% block content %}
         No content.
-    {% endblock %}
+        {% endblock %}
 
-</div>
+    </div>
 
-<script src="{% static 'vendor/jquery/jquery-3.4.1.min.js' %}"></script>
-<script src="{% static 'vendor/popper/popper.min.js' %}"></script>
-<script src="{% static 'vendor/bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'vendor/jquery/jquery-3.4.1.min.js' %}"></script>
+    <script src="{% static 'vendor/popper/popper.min.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.min.js' %}"></script>
 
-<script src="{% static 'js/ie10-viewport-bug-workaround.js' %}"></script>
+    <script src="{% static 'js/ie10-viewport-bug-workaround.js' %}"></script>
 
 </body>
+
 </html>
