@@ -1,1 +1,4 @@
 source/app/__pycache__/*
+ams-env/*
+source/accounts/*
+*.pyc
