@@ -1,3 +1,4 @@
+from typing import Any, Dict
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, REDIRECT_FIELD_NAME
 from django.contrib.auth.tokens import default_token_generator
@@ -6,6 +7,7 @@ from django.contrib.auth.views import (
     LogoutView as BaseLogoutView, PasswordChangeView as BasePasswordChangeView,
     PasswordResetDoneView as BasePasswordResetDoneView, PasswordResetConfirmView as BasePasswordResetConfirmView,
 )
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.utils.crypto import get_random_string
 from django.utils.decorators import method_decorator
@@ -29,7 +31,7 @@ from .utils import (
 from .forms import (
     SignInViaUsernameForm, SignInViaEmailForm, SignInViaEmailOrUsernameForm, SignUpForm,
     RestorePasswordForm, RestorePasswordViaEmailOrUsernameForm, RemindUsernameForm,
-    ResendActivationCodeForm, ResendActivationCodeViaEmailForm, ChangeProfileForm, ChangeEmailForm,
+    ResendActivationCodeForm, ResendActivationCodeViaEmailForm, ChangeProfileForm, ChangeEmailForm, UpdateFamilyInfoForm,
 )
 from .models import Activation, Family
 
@@ -211,6 +213,58 @@ class RestorePasswordView(GuestOnlyView, FormView):
 
         return redirect('accounts:restore_password_done')
 
+class UpdateFamilyView(LoginRequiredMixin, FormView):
+    template_name = 'accounts/profile/update_family.html'
+    form_class = UpdateFamilyInfoForm
+    # success_url = '/accounts/change/family/'
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+
+        user = self.request.user
+        family_members = User.objects.filter(family=user.family).exclude(id=user.id)
+
+        
+
+        # family_members_emails = []
+        # for e in family_members:
+        #     family_members_emails.append(e.email)
+    
+
+        # Add in a QuerySet of all the books
+        context["family_members"] = family_members
+        return context
+    
+
+    def get_initial(self):
+        user = self.request.user
+        initial = super().get_initial()
+        initial['family_name'] = user.family.name
+
+        
+        return initial
+    
+    def form_valid(self, form):
+        user = self.request.user
+
+        family = user.family
+        family.name = form.cleaned_data['family_name']
+        family.save()
+
+        new_member = User.objects.filter(email=form.cleaned_data['new_family_member_email']).first()
+        print("new_member: ", new_member)
+        if not new_member:
+            messages.error(self.request, "Not found this account, please check")
+        else:
+            new_member.family = user.family
+            new_member.save()
+            print("XXXXX")
+            print(new_member)
+            messages.success(self.request, 'Family data has been successfully updated.')
+
+        return redirect('accounts:update_family')
+
+
 
 class ChangeProfileView(LoginRequiredMixin, FormView):
     template_name = 'accounts/profile/change_profile.html'
@@ -228,6 +282,8 @@ class ChangeProfileView(LoginRequiredMixin, FormView):
         user.first_name = form.cleaned_data['first_name']
         user.last_name = form.cleaned_data['last_name']
         user.save()
+
+        
 
         messages.success(self.request, _('Profile data has been successfully updated.'))
 

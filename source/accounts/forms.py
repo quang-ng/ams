@@ -194,6 +194,12 @@ class RestorePasswordViaEmailOrUsernameForm(EmailOrUsernameForm):
 class ChangeProfileForm(forms.Form):
     first_name = forms.CharField(label=_('First name'), max_length=30, required=False)
     last_name = forms.CharField(label=_('Last name'), max_length=150, required=False)
+    
+
+class UpdateFamilyInfoForm(forms.Form):
+    family_name = forms.CharField(label=_('Your family name'), max_length=150, required=False)
+    new_family_member_email = forms.CharField(label=_('New member email'), max_length=150, required=False)
+
 
 
 class ChangeEmailForm(forms.Form):

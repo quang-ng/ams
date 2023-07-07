@@ -1,0 +1,26 @@
+{% extends 'layouts/default/page.html' %}
+
+{% load bootstrap4 %}
+{% load i18n %}
+
+{% block content %}
+
+    <h4>Cập nhật thông tin gia đình</h4>
+
+    <form method="post" class="mb-5">
+
+        {% csrf_token %}
+        {% bootstrap_form form %}
+
+        
+        <button class="btn btn-success">{% trans 'Change' %}</button>
+
+    </form>
+
+    <h4>Danh sách thành viên</h4>
+    <ul class="list-group">
+        {% for e in family_members %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">{{e.email}}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
