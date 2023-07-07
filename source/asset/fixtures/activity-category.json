@@ -1,0 +1,106 @@
+[
+    {
+        "model": "asset.ActivityCategory",
+        "pk": 1,
+        "fields": {
+            "name": "Ăn uống",
+            "activity_type": "EXPENSE"
+        }
+    },
+    {
+        "model": "asset.ActivityCategory",
+        "pk": 2,
+        "fields": {
+            "name": "Chi tiêu hằng ngày",
+            "activity_type": "EXPENSE"
+        }
+    },
+    {
+        "model": "asset.ActivityCategory",
+        "pk": 3,
+        "fields": {
+            "name": "Quần áo",
+            "activity_type": "EXPENSE"
+        }
+    },
+    {
+        "model": "asset.ActivityCategory",
+        "pk": 4,
+        "fields": {
+            "name": "Phí giao lưu",
+            "activity_type": "EXPENSE"
+        }
+    },
+    {
+        "model": "asset.ActivityCategory",
+        "pk": 5,
+        "fields": {
+            "name": "Y tế",
+            "activity_type": "EXPENSE"
+        }
+    },
+    {
+        "model": "asset.ActivityCategory",
+        "pk": 6,
+        "fields": {
+            "name": "Giáo dục",
+            "activity_type": "EXPENSE"
+        }
+    },
+    {
+        "model": "asset.ActivityCategory",
+        "pk": 7,
+        "fields": {
+            "name": "Đi lại",
+            "activity_type": "EXPENSE"
+        }
+    },
+    {
+        "model": "asset.ActivityCategory",
+        "pk": 8,
+        "fields": {
+            "name": "Khác",
+            "activity_type": "EXPENSE"
+        }
+    },
+    {
+        "model": "asset.ActivityCategory",
+        "pk": 9,
+        "fields": {
+            "name": "Lương",
+            "activity_type": "INCOME"
+        }
+    },
+    {
+        "model": "asset.ActivityCategory",
+        "pk": 10,
+        "fields": {
+            "name": "Phụ cấp",
+            "activity_type": "INCOME"
+        }
+    },
+    {
+        "model": "asset.ActivityCategory",
+        "pk": 11,
+        "fields": {
+            "name": "Lãi đầu tư",
+            "activity_type": "INCOME"
+        }
+    },
+    {
+        "model": "asset.ActivityCategory",
+        "pk": 12,
+        "fields": {
+            "name": "Thu nhập bất thường",
+            "activity_type": "INCOME"
+        }
+    },
+    {
+        "model": "asset.ActivityCategory",
+        "pk": 13,
+        "fields": {
+            "name": "Khác",
+            "activity_type": "INCOME"
+        }
+    }
+]
