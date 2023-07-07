@@ -15,6 +15,8 @@ class ActivityCategory(models.Model):
         choices=ACTIVITY_TYPE_CHOICES,
         default=EXPENSE,
     )
+    def __str__(self):
+        return self.name
 
 
 class Asset(models.Model):
@@ -40,6 +42,9 @@ class Asset(models.Model):
         default=CASH,
     )
 
+    def __str__(self):
+        return self.name
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -63,6 +68,9 @@ class Liability(models.Model):
         default=CREDIT_CARD,
     )
 
+    def __str__(self):
+        return self.name
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -76,10 +84,10 @@ class Activity(models.Model):
     )
     category = models.ForeignKey(ActivityCategory, on_delete=models.CASCADE)
     input_date = models.DateTimeField()
-    notes = models.TextField(null=True)
     amount = models.BigIntegerField()
     asset = models.ForeignKey(Asset, on_delete=models.CASCADE, null=True)
     liability = models.ForeignKey(Liability, on_delete=models.CASCADE, null=True)
+    notes = models.TextField(null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

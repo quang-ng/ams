@@ -27,7 +27,7 @@
 <body>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-to">
-    <a class="navbar-brand" href="{% url 'index' %}">Trang chủ</a>
+    <a class="navbar-brand" href="{% url 'asset:new_activity' %}">Trang chủ</a>
 
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
         aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,14 +40,17 @@
             {% if request.user.is_authenticated %}
                 {% if request.user.is_superuser %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'admin:login' %}">{% trans 'Django administration' %}</a>
+                        <a class="nav-link" href="{% url 'asset:new_activity' %}">{% trans 'Django administration' %}</a>
                     </li>
                 {% endif %}
                 <li class="nav-item">
                     <a class="nav-link" href="#">Lịch sử giao dịch</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Tài Sản</a>
+                    <a class="nav-link" href="#">Tất toán khoản đầu tư</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Tài Sản/Nợ</a>
                 </li>
                 <li class="nav-item dropdown mr-auto">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"

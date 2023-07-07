@@ -4,10 +4,11 @@ from django.contrib.auth import login, authenticate, REDIRECT_FIELD_NAME
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import (
-    LogoutView as BaseLogoutView, PasswordChangeView as BasePasswordChangeView,
-    PasswordResetDoneView as BasePasswordResetDoneView, PasswordResetConfirmView as BasePasswordResetConfirmView,
+    LogoutView as BaseLogoutView,
+    PasswordChangeView as BasePasswordChangeView,
+    PasswordResetDoneView as BasePasswordResetDoneView,
+    PasswordResetConfirmView as BasePasswordResetConfirmView,
 )
-from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.utils.crypto import get_random_string
 from django.utils.decorators import method_decorator
@@ -20,18 +21,33 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import View, FormView
 from django.conf import settings
+from django.shortcuts import render
+from django.contrib.auth import logout
 
 from django.contrib.auth import get_user_model
+
 User = get_user_model()
 
 
 from .utils import (
-    send_activation_email, send_reset_password_email, send_forgotten_username_email, send_activation_change_email,
+    send_activation_email,
+    send_reset_password_email,
+    send_forgotten_username_email,
+    send_activation_change_email,
 )
 from .forms import (
-    SignInViaUsernameForm, SignInViaEmailForm, SignInViaEmailOrUsernameForm, SignUpForm,
-    RestorePasswordForm, RestorePasswordViaEmailOrUsernameForm, RemindUsernameForm,
-    ResendActivationCodeForm, ResendActivationCodeViaEmailForm, ChangeProfileForm, ChangeEmailForm, UpdateFamilyInfoForm,
+    SignInViaUsernameForm,
+    SignInViaEmailForm,
+    SignInViaEmailOrUsernameForm,
+    SignUpForm,
+    RestorePasswordForm,
+    RestorePasswordViaEmailOrUsernameForm,
+    RemindUsernameForm,
+    ResendActivationCodeForm,
+    ResendActivationCodeViaEmailForm,
+    ChangeProfileForm,
+    ChangeEmailForm,
+    UpdateFamilyInfoForm,
 )
 from .models import Activation, Family
 
@@ -46,7 +62,7 @@ class GuestOnlyView(View):
 
 
 class LogInView(GuestOnlyView, FormView):
-    template_name = 'accounts/log_in.html'
+    template_name = "accounts/log_in.html"
 
     @staticmethod
     def get_form_class(**kwargs):
@@ -58,7 +74,7 @@ class LogInView(GuestOnlyView, FormView):
 
         return SignInViaUsernameForm
 
-    @method_decorator(sensitive_post_parameters('password'))
+    @method_decorator(sensitive_post_parameters("password"))
     @method_decorator(csrf_protect)
     @method_decorator(never_cache)
     def dispatch(self, request, *args, **kwargs):
@@ -77,13 +93,19 @@ class LogInView(GuestOnlyView, FormView):
         # The default Django's "remember me" lifetime is 2 weeks and can be changed by modifying
         # the SESSION_COOKIE_AGE settings' option.
         if settings.USE_REMEMBER_ME:
-            if not form.cleaned_data['remember_me']:
+            if not form.cleaned_data["remember_me"]:
                 request.session.set_expiry(0)
 
         login(request, form.user_cache)
 
-        redirect_to = request.POST.get(REDIRECT_FIELD_NAME, request.GET.get(REDIRECT_FIELD_NAME))
-        url_is_safe = is_safe_url(redirect_to, allowed_hosts=request.get_host(), require_https=request.is_secure())
+        redirect_to = request.POST.get(
+            REDIRECT_FIELD_NAME, request.GET.get(REDIRECT_FIELD_NAME)
+        )
+        url_is_safe = is_safe_url(
+            redirect_to,
+            allowed_hosts=request.get_host(),
+            require_https=request.is_secure(),
+        )
 
         if url_is_safe:
             return redirect(redirect_to)
@@ -92,7 +114,7 @@ class LogInView(GuestOnlyView, FormView):
 
 
 class SignUpView(GuestOnlyView, FormView):
-    template_name = 'accounts/sign_up.html'
+    template_name = "accounts/sign_up.html"
     form_class = SignUpForm
 
     def form_valid(self, form):
@@ -103,7 +125,7 @@ class SignUpView(GuestOnlyView, FormView):
             # Set a temporary username
             user.username = get_random_string()
         else:
-            user.username = form.cleaned_data['username']
+            user.username = form.cleaned_data["username"]
 
         if settings.ENABLE_USER_ACTIVATION:
             user.is_active = False
@@ -117,7 +139,7 @@ class SignUpView(GuestOnlyView, FormView):
 
         # Change the username to the "user_ID" form
         if settings.DISABLE_USERNAME:
-            user.username = f'user_{user.id}'
+            user.username = f"user_{user.id}"
             user.save()
 
         if settings.ENABLE_USER_ACTIVATION:
@@ -131,16 +153,20 @@ class SignUpView(GuestOnlyView, FormView):
             send_activation_email(request, user.email, code)
 
             messages.success(
-                request, _('You are signed up. To activate the account, follow the link sent to the mail.'))
+                request,
+                _(
+                    "You are signed up. To activate the account, follow the link sent to the mail."
+                ),
+            )
         else:
-            raw_password = form.cleaned_data['password1']
+            raw_password = form.cleaned_data["password1"]
 
             user = authenticate(username=user.username, password=raw_password)
             login(request, user)
 
-            messages.success(request, _('You are successfully signed up!'))
+            messages.success(request, _("You are successfully signed up!"))
 
-        return redirect('index')
+        return redirect("index")
 
 
 class ActivateView(View):
@@ -156,13 +182,13 @@ class ActivateView(View):
         # Remove the activation record
         act.delete()
 
-        messages.success(request, _('You have successfully activated your account!'))
+        messages.success(request, _("You have successfully activated your account!"))
 
-        return redirect('accounts:log_in')
+        return redirect("accounts:log_in")
 
 
 class ResendActivationCodeView(GuestOnlyView, FormView):
-    template_name = 'accounts/resend_activation_code.html'
+    template_name = "accounts/resend_activation_code.html"
 
     @staticmethod
     def get_form_class(**kwargs):
@@ -186,13 +212,16 @@ class ResendActivationCodeView(GuestOnlyView, FormView):
 
         send_activation_email(self.request, user.email, code)
 
-        messages.success(self.request, _('A new activation code has been sent to your email address.'))
+        messages.success(
+            self.request,
+            _("A new activation code has been sent to your email address."),
+        )
 
-        return redirect('accounts:resend_activation_code')
+        return redirect("accounts:resend_activation_code")
 
 
 class RestorePasswordView(GuestOnlyView, FormView):
-    template_name = 'accounts/restore_password.html'
+    template_name = "accounts/restore_password.html"
 
     @staticmethod
     def get_form_class(**kwargs):
@@ -211,12 +240,12 @@ class RestorePasswordView(GuestOnlyView, FormView):
 
         send_reset_password_email(self.request, user.email, token, uid)
 
-        return redirect('accounts:restore_password_done')
+        return redirect("accounts:restore_password_done")
+
 
 class UpdateFamilyView(LoginRequiredMixin, FormView):
-    template_name = 'accounts/profile/update_family.html'
+    template_name = "accounts/profile/update_family.html"
     form_class = UpdateFamilyInfoForm
-    # success_url = '/accounts/change/family/'
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
@@ -224,89 +253,75 @@ class UpdateFamilyView(LoginRequiredMixin, FormView):
         user = self.request.user
         family_members = User.objects.filter(family=user.family).exclude(id=user.id)
 
-        
-
-        # family_members_emails = []
-        # for e in family_members:
-        #     family_members_emails.append(e.email)
-    
-
-        # Add in a QuerySet of all the books
         context["family_members"] = family_members
         return context
-    
 
     def get_initial(self):
         user = self.request.user
         initial = super().get_initial()
-        initial['family_name'] = user.family.name
+        initial["family_name"] = user.family.name
 
-        
         return initial
-    
+
     def form_valid(self, form):
         user = self.request.user
 
         family = user.family
-        family.name = form.cleaned_data['family_name']
+        family.name = form.cleaned_data["family_name"]
         family.save()
 
-        new_member = User.objects.filter(email=form.cleaned_data['new_family_member_email']).first()
-        print("new_member: ", new_member)
+        new_member = User.objects.filter(
+            email=form.cleaned_data["new_family_member_email"]
+        ).first()
         if not new_member:
             messages.error(self.request, "Not found this account, please check")
         else:
             new_member.family = user.family
             new_member.save()
-            print("XXXXX")
-            print(new_member)
-            messages.success(self.request, 'Family data has been successfully updated.')
+            messages.success(self.request, "Family data has been successfully updated.")
 
-        return redirect('accounts:update_family')
-
+        return redirect("accounts:update_family")
 
 
 class ChangeProfileView(LoginRequiredMixin, FormView):
-    template_name = 'accounts/profile/change_profile.html'
+    template_name = "accounts/profile/change_profile.html"
     form_class = ChangeProfileForm
 
     def get_initial(self):
         user = self.request.user
         initial = super().get_initial()
-        initial['first_name'] = user.first_name
-        initial['last_name'] = user.last_name
+        initial["first_name"] = user.first_name
+        initial["last_name"] = user.last_name
         return initial
 
     def form_valid(self, form):
         user = self.request.user
-        user.first_name = form.cleaned_data['first_name']
-        user.last_name = form.cleaned_data['last_name']
+        user.first_name = form.cleaned_data["first_name"]
+        user.last_name = form.cleaned_data["last_name"]
         user.save()
 
-        
+        messages.success(self.request, _("Profile data has been successfully updated."))
 
-        messages.success(self.request, _('Profile data has been successfully updated.'))
-
-        return redirect('accounts:change_profile')
+        return redirect("accounts:change_profile")
 
 
 class ChangeEmailView(LoginRequiredMixin, FormView):
-    template_name = 'accounts/profile/change_email.html'
+    template_name = "accounts/profile/change_email.html"
     form_class = ChangeEmailForm
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs['user'] = self.request.user
+        kwargs["user"] = self.request.user
         return kwargs
 
     def get_initial(self):
         initial = super().get_initial()
-        initial['email'] = self.request.user.email
+        initial["email"] = self.request.user.email
         return initial
 
     def form_valid(self, form):
         user = self.request.user
-        email = form.cleaned_data['email']
+        email = form.cleaned_data["email"]
 
         if settings.ENABLE_ACTIVATION_AFTER_EMAIL_CHANGE:
             code = get_random_string(20)
@@ -319,14 +334,19 @@ class ChangeEmailView(LoginRequiredMixin, FormView):
 
             send_activation_change_email(self.request, email, code)
 
-            messages.success(self.request, _('To complete the change of email address, click on the link sent to it.'))
+            messages.success(
+                self.request,
+                _(
+                    "To complete the change of email address, click on the link sent to it."
+                ),
+            )
         else:
             user.email = email
             user.save()
 
-            messages.success(self.request, _('Email successfully changed.'))
+            messages.success(self.request, _("Email successfully changed."))
 
-        return redirect('accounts:change_email')
+        return redirect("accounts:change_email")
 
 
 class ChangeEmailActivateView(View):
@@ -342,26 +362,28 @@ class ChangeEmailActivateView(View):
         # Remove the activation record
         act.delete()
 
-        messages.success(request, _('You have successfully changed your email!'))
+        messages.success(request, _("You have successfully changed your email!"))
 
-        return redirect('accounts:change_email')
+        return redirect("accounts:change_email")
 
 
 class RemindUsernameView(GuestOnlyView, FormView):
-    template_name = 'accounts/remind_username.html'
+    template_name = "accounts/remind_username.html"
     form_class = RemindUsernameForm
 
     def form_valid(self, form):
         user = form.user_cache
         send_forgotten_username_email(user.email, user.username)
 
-        messages.success(self.request, _('Your username has been successfully sent to your email.'))
+        messages.success(
+            self.request, _("Your username has been successfully sent to your email.")
+        )
 
-        return redirect('accounts:remind_username')
+        return redirect("accounts:remind_username")
 
 
 class ChangePasswordView(BasePasswordChangeView):
-    template_name = 'accounts/profile/change_password.html'
+    template_name = "accounts/profile/change_password.html"
 
     def form_valid(self, form):
         # Change the password
@@ -370,26 +392,30 @@ class ChangePasswordView(BasePasswordChangeView):
         # Re-authentication
         login(self.request, user)
 
-        messages.success(self.request, _('Your password was changed.'))
+        messages.success(self.request, _("Your password was changed."))
 
-        return redirect('accounts:change_password')
+        return redirect("accounts:change_password")
 
 
 class RestorePasswordConfirmView(BasePasswordResetConfirmView):
-    template_name = 'accounts/restore_password_confirm.html'
+    template_name = "accounts/restore_password_confirm.html"
 
     def form_valid(self, form):
         # Change the password
         form.save()
 
-        messages.success(self.request, _('Your password has been set. You may go ahead and log in now.'))
+        messages.success(
+            self.request,
+            _("Your password has been set. You may go ahead and log in now."),
+        )
 
-        return redirect('accounts:log_in')
+        return redirect("accounts:log_in")
 
 
 class RestorePasswordDoneView(BasePasswordResetDoneView):
-    template_name = 'accounts/restore_password_done.html'
+    template_name = "accounts/restore_password_done.html"
 
 
-class LogOutView(LoginRequiredMixin, BaseLogoutView):
-    template_name = 'accounts/log_out.html'
+def logout_view(request):
+    logout(request)
+    return render(request, "accounts/log_out.html")
