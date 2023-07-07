@@ -1,4 +1,4 @@
 source/app/__pycache__/*
 ams-env/*
-source/accounts/*
 *.pyc
+source/accounts/migrations/__pycache__/0003_alter_activation_id.cpython-310.pyc
