@@ -33,6 +33,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.sites",
+    "django.contrib.humanize",
+    "djmoney",
     # Vendor apps
     "bootstrap4",
     # Application apps
@@ -157,3 +159,4 @@ LOCALE_PATHS = [os.path.join(CONTENT_DIR, "locale")]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "accounts.MyUser"
+USE_THOUSAND_SEPARATOR = True

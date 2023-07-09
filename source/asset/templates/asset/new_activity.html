@@ -5,16 +5,35 @@
 
 {% block content %}
 
-    <h4>THêm</h4>
+<h4>Nhật ký hoạt động</h4>
 
-    <form method="post">
+<form method="post" id="acticty-form-id" data-cities-url="{% url 'asset:ajax_load_category' %}" novalidate>
 
-        {% csrf_token %}
-        {% bootstrap_form form %}
+    {% csrf_token %}
+    {% bootstrap_form form %}
 
-        <button class="btn btn-primary">Thêm</button>
+    <button class="btn btn-primary">Thêm</button>
 
-    </form>
+</form>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script>
+    $("#id_activity_type").change(function () {
+        var url = $("#acticty-form-id").attr("data-cities-url"); 
+        var activity_type = $(this).val(); 
+
+        $.ajax({                      
+            url: url,                   
+            data: {
+                'activity_type': activity_type      
+            },
+            success: function (data) {  
+                $("#id_category").html(data); 
+            }
+        });
+
+    });
+</script>
 
 
 {% endblock %}
