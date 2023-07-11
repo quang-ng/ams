@@ -19,18 +19,24 @@
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 <script>
     $("#id_activity_type").change(function () {
-        var url = $("#acticty-form-id").attr("data-cities-url"); 
-        var activity_type = $(this).val(); 
+        var url = $("#acticty-form-id").attr("data-cities-url");
+        var activity_type = $(this).val();
 
-        $.ajax({                      
-            url: url,                   
+        $.ajax({
+            url: url,
             data: {
-                'activity_type': activity_type      
+                'activity_type': activity_type
             },
-            success: function (data) {  
-                $("#id_category").html(data); 
+            success: function (data) {
+                $("#id_category").html(data);
             }
         });
+
+        if (activity_type == "INCOME") {
+            $("#id_funding_sources").html('<option value="CASH" selected="">Tiền mặt</option>')
+        } else {
+            $("#id_funding_sources").html('<option value="CASH" selected="">Tiền mặt</option><option value="CREDIT CARD">Thẻ tín dụng</option><option value="SHORT-TERM DEBT">Khoản nợ ngắn hạn</option><option value="LONG-TERM DEBT">Khoản nợ giải hạn</option>')
+        }
 
     });
 </script>

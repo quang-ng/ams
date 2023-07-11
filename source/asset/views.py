@@ -4,6 +4,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import FormView
 from django.shortcuts import redirect
 from django.contrib import messages
+from djmoney.money import Money
+
 
 from asset.forms import InsertActivityForm
 from asset.models import ActivityCategory
@@ -33,25 +35,19 @@ class InsertActivityView(LoginRequiredMixin, FormView):
         
         activity = Activity(**form.cleaned_data, user=user)
         activity.save()
-        print("activity:", activity)
-        print("form.cleaned_data:", form.cleaned_data)
 
 
         if activity.activity_type == INCOME:
             # Increase cash asset
             cash_asset = Asset.objects.filter(user=user, category=CASH).first()
-            print("cash_asset1111:", cash_asset)
             if not cash_asset:
-                print("xxxx")
-                cash_asset = Asset({
-                    "user": user,
-                    "name": "Tiền mặt",
-                    "amout": 0,
-                    "category": CASH
-                })
+                cash_asset = Asset(
+                    user=user,
+                    name="Tiền mặt",
+                    amount=Money(0, 'VND'),
+                    category=CASH
+                )
                 cash_asset.save()
-                print("cassh_asset:", cash_asset)
-            print("cassh_asset:", cash_asset)
             cash_asset.amount.amount += activity.amount.amount
             cash_asset.save()
 

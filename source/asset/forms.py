@@ -6,6 +6,10 @@ from django.contrib.auth import get_user_model
 from asset.models import Activity, ActivityCategory
 from asset.models import EXPENSE
 
+from django.forms import Select
+from django.conf import settings
+from djmoney.forms import MoneyWidget
+
 User = get_user_model()
 
 
@@ -15,6 +19,20 @@ class UserCacheMixin:
 
 class DateInput(forms.DateInput):
     input_type = "date"
+
+class BlankWidget(Select):
+    template_name = "asset/django-money/fake-widget.html"
+
+
+class NoCurrencyMoneyWidget(MoneyWidget):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs, currency_widget=BlankWidget)
+
+    def value_from_datadict(self, data, files, name):
+        val = super().value_from_datadict(data, files, name)
+        if val[1] is None:
+            val[1] = settings.DEFAULT_CURRENCY
+        return val
 
 
 class InsertActivityForm(forms.ModelForm):
@@ -33,6 +51,8 @@ class InsertActivityForm(forms.ModelForm):
             self.fields["category"].queryset = ActivityCategory.objects.filter(
                 activity_type=EXPENSE
             ).order_by("id")
+# 
+        # self.fields['amount'].widget.attrs['class'] = "form-control col-xs-3"
 
     class Meta:
         model = Activity
@@ -48,6 +68,7 @@ class InsertActivityForm(forms.ModelForm):
         widgets = {
             "input_date": DateInput(),
             "notes": forms.Textarea(attrs={"rows": 3}),
+            "amount": NoCurrencyMoneyWidget
         }
         field_order = fields
         labels = {
