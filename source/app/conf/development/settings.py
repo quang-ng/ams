@@ -161,3 +161,4 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "accounts.MyUser"
 USE_THOUSAND_SEPARATOR = True
 DEFAULT_CURRENCY = "VND"
+ALLOWED_HOSTS = ["*"]

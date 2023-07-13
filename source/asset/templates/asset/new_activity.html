@@ -7,10 +7,12 @@
 
 <h4>Nhật ký hoạt động</h4>
 
-<form method="post" id="acticty-form-id" data-cities-url="{% url 'asset:ajax_load_category' %}" novalidate>
+
+<form method="post" id="acticty-form-id" data-cities-url="{% url 'asset:ajax_load_category' %}" class="form-horizontal"
+    novalidate>
 
     {% csrf_token %}
-    {% bootstrap_form form %}
+    {% bootstrap_form form layout="horizontal" %}
 
     <button class="btn btn-primary">Thêm</button>
 
@@ -37,8 +39,58 @@
         } else {
             $("#id_funding_sources").html('<option value="CASH" selected="">Tiền mặt</option><option value="CREDIT CARD">Thẻ tín dụng</option><option value="SHORT-TERM DEBT">Khoản nợ ngắn hạn</option><option value="LONG-TERM DEBT">Khoản nợ giải hạn</option>')
         }
-
     });
+
+    (function ($, undefined) {
+
+        "use strict";
+
+        // When ready.
+        $(function () {
+
+            var $form = $("#acticty-form-id");
+            var $input = $form.find("#id_amount_0");
+
+            $input.on("keyup", function (event) {
+
+
+                // When user select text in the document, also abort.
+                var selection = window.getSelection().toString();
+                if (selection !== '') {
+                    return;
+                }
+
+                // When the arrow keys are pressed, abort.
+                if ($.inArray(event.keyCode, [38, 40, 37, 39]) !== -1) {
+                    return;
+                }
+
+
+                var $this = $(this);
+
+                // Get the value.
+                var input = $this.val();
+
+                var input = input.replace(/[\D\s\._\-]+/g, "");
+                input = input ? parseInt(input, 10) : 0;
+
+                $this.val(function () {
+                    return (input === 0) ? "" : input.toLocaleString("en-US");
+                });
+            });
+
+            /**
+             * ==================================
+             * When Form Submitted
+             * ==================================
+             */
+            $form.on("submit", function (event) {
+                var rawNumber = $("#id_amount_0").val().replace(/[($)\s\,_\-]+/g, '')
+                $("#id_amount_0").val(rawNumber)
+            });
+
+        });
+    })(jQuery);
 </script>
 
 

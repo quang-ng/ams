@@ -51,8 +51,6 @@ class InsertActivityForm(forms.ModelForm):
             self.fields["category"].queryset = ActivityCategory.objects.filter(
                 activity_type=EXPENSE
             ).order_by("id")
-# 
-        # self.fields['amount'].widget.attrs['class'] = "form-control col-xs-3"
 
     class Meta:
         model = Activity
@@ -67,7 +65,7 @@ class InsertActivityForm(forms.ModelForm):
 
         widgets = {
             "input_date": DateInput(),
-            "notes": forms.Textarea(attrs={"rows": 3}),
+            "notes": forms.Textarea(attrs={"rows": 1}),
             "amount": NoCurrencyMoneyWidget
         }
         field_order = fields
@@ -77,5 +75,5 @@ class InsertActivityForm(forms.ModelForm):
             "input_date": "Ngày thực hiện",
             "amount": "Số tiền",
             "funding_sources": "Nguồn tiền",
-            "notes": "Ghi chú riêng",
+            "notes": "Ghi chú",
         }

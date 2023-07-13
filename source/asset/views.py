@@ -35,11 +35,15 @@ class InsertActivityView(LoginRequiredMixin, FormView):
     def get_initial(self):
         initial = super().get_initial()
         initial["input_date"] = datetime.now()
+        initial["category"] = (
+            ActivityCategory.objects.filter(activity_type=EXPENSE)
+            .order_by("id")
+            .first()
+        )
         return initial
 
     def form_valid(self, form):
         user = self.request.user
-
         activity = Activity(**form.cleaned_data, user=user)
         activity.save()
 
