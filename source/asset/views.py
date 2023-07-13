@@ -6,6 +6,7 @@ from django.shortcuts import redirect
 from django.contrib import messages
 from djmoney.money import Money
 from django.conf import settings
+from django.views.generic import ListView
 
 from asset.forms import InsertActivityForm
 from asset.models import ActivityCategory
@@ -14,6 +15,7 @@ from asset.models import INCOME, EXPENSE
 from asset.models import Asset
 from asset.models import CASH
 from asset.models import Liability
+from accounts.models import MyUser
 
 
 def load_category(request):
@@ -129,3 +131,24 @@ class InsertActivityView(LoginRequiredMixin, FormView):
             )
 
         cash_asset.save()
+
+
+class ListActivityView(LoginRequiredMixin, ListView):
+    paginate_by = 20
+    model = Activity
+    template_name = "asset/list_activity.html"
+
+    def get_queryset(self):
+        user = self.request.user
+
+        users_in_family = MyUser.objects.filter(family=user.family)
+        from_date = self.request.GET.get("fromdate")
+        to_date = self.request.GET.get("todate")
+        self.queryset = Activity.objects.filter(user__in=users_in_family)
+        if from_date:
+            self.queryset.filter(from_date__gte=from_date)
+        if to_date:
+            self.queryset.filter(to_date__lte=to_date)
+
+        self.queryset.order_by("-created_at")
+        return self.queryset
