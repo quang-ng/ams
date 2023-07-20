@@ -47,10 +47,13 @@
                     <a class="nav-link" href="{% url 'asset:history_activity' %}">Lịch sử giao dịch</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Tất toán khoản đầu tư</a>
+                    <a class="nav-link" href="{% url 'asset:asset_liquidation_process' %}">Tất toán đầu tư</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Tài Sản/Nợ</a>
+                    <a class="nav-link" href="#">Thanh toán nợ</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Thông tin tài sản và nợ</a>
                 </li>
                 <li class="nav-item dropdown mr-auto">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
@@ -96,6 +99,8 @@
     <script src="{% static 'vendor/bootstrap/js/bootstrap.min.js' %}"></script>
 
     <script src="{% static 'js/ie10-viewport-bug-workaround.js' %}"></script>
+
+
 
 </body>
 

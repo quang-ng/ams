@@ -6,21 +6,10 @@
 {% block content %}
 
 
-
 <div class="row">
     <div class="col-xl-3"></div>
     <div class="col-xl-6 mb-4">
-        <h4>Thêm hoạt động</h4>
-    </div>
-    <div class="col-xl-3"></div>
-</div>
-
-
-<div class="row">
-    <div class="col-xl-3"></div>
-    <div class="col-xl-6 mb-4">
-        <form method="post" id="acticty-form-id" data-cities-url="{% url 'asset:ajax_load_category' %}"
-            class="form-horizontal" novalidate>
+        <form method="post" id="asset_liqudation_form" class="form-horizontal" novalidate>
 
             {% csrf_token %}
             {% bootstrap_form form %}
@@ -35,27 +24,6 @@
 
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 <script>
-    $("#id_activity_type").change(function () {
-        var url = $("#acticty-form-id").attr("data-cities-url");
-        var activity_type = $(this).val();
-
-        $.ajax({
-            url: url,
-            data: {
-                'activity_type': activity_type
-            },
-            success: function (data) {
-                $("#id_category").html(data);
-            }
-        });
-
-        if (activity_type == "INCOME") {
-            $("#id_funding_sources").html('<option value="CASH" selected="">Tiền mặt</option>')
-        } else {
-            $("#id_funding_sources").html('<option value="CASH" selected="">Tiền mặt</option><option value="CREDIT CARD">Thẻ tín dụng</option><option value="SHORT-TERM DEBT">Khoản nợ ngắn hạn</option><option value="LONG-TERM DEBT">Khoản nợ giải hạn</option>')
-        }
-    });
-
     (function ($, undefined) {
 
         "use strict";
@@ -63,8 +31,10 @@
         // When ready.
         $(function () {
 
-            var $form = $("#acticty-form-id");
-            var $input = $form.find("#id_amount_0");
+            var $form = $("#asset_liqudation_form");
+            var $input = $form.find('input[type="number"]');
+
+            //*[@id="id_liquidation_value"]
 
             $input.on("keyup", function (event) {
 
@@ -107,6 +77,5 @@
         });
     })(jQuery);
 </script>
-
 
 {% endblock %}

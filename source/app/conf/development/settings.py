@@ -143,7 +143,7 @@ LANGUAGES = [
 ]
 
 TIME_ZONE = "UTC"
-USE_TZ = True
+USE_TZ = False
 
 STATIC_ROOT = os.path.join(CONTENT_DIR, "static")
 STATIC_URL = "/static/"

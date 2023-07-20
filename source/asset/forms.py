@@ -1,6 +1,8 @@
+from typing import Any, Mapping, Optional, Type, Union
 from django import forms
+from django.forms.utils import ErrorList
 from django.utils.translation import gettext_lazy as _
-
+from djmoney.models.fields import MoneyField
 from django.contrib.auth import get_user_model
 
 from asset.models import Activity, ActivityCategory
@@ -9,6 +11,7 @@ from asset.models import EXPENSE
 from django.forms import Select
 from django.conf import settings
 from djmoney.forms import MoneyWidget
+from asset.models import Asset
 
 User = get_user_model()
 
@@ -19,6 +22,7 @@ class UserCacheMixin:
 
 class DateInput(forms.DateInput):
     input_type = "date"
+
 
 class BlankWidget(Select):
     template_name = "asset/django-money/fake-widget.html"
@@ -66,7 +70,7 @@ class InsertActivityForm(forms.ModelForm):
         widgets = {
             "input_date": DateInput(),
             "notes": forms.Textarea(attrs={"rows": 1}),
-            "amount": NoCurrencyMoneyWidget
+            "amount": NoCurrencyMoneyWidget,
         }
         field_order = fields
         labels = {
@@ -77,3 +81,12 @@ class InsertActivityForm(forms.ModelForm):
             "funding_sources": "Nguồn tiền",
             "notes": "Ghi chú",
         }
+
+class AssetLiquidationProcessForm(forms.Form):
+    asset = forms.ModelChoiceField(queryset=None, label="Chọn tài sản muốn tất toán")
+    liquidation_value = forms.IntegerField(label="Số tiền thu về")
+    residual_value = forms.IntegerField(label="Giá trị tài sản còn lại")
+
+    def __init__(self, user, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['asset'].queryset = Asset.objects.filter(user=user)

@@ -1,195 +1,189 @@
 {% extends 'layouts/default/page.html' %}
 
+{% load static %}
 {% load bootstrap4 %}
 {% load i18n %}
 
 {% block content %}
 
-<h4>Nhật ký hoạt động</h4>
+<div class="row">
+  <div class="col-xl-3"></div>
+  <div class="col-xl-6 mb-4">
+    <h4>Lịch sử</h4>
+  </div>
+  <div class="col-xl-3"></div>
+</div>
 
 
 <div class="row">
-    <div class="col-xl-6 mb-4">
-      <div class="card">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center">
-              <img
-                src="https://mdbootstrap.com/img/new/avatars/8.jpg"
-                alt=""
-                style="width: 45px; height: 45px"
-                class="rounded-circle"
-              />
-              <div class="ms-3">
-                <p class="fw-bold mb-1">John Doe</p>
-                <p class="text-muted mb-0">john.doe@gmail.com</p>
-              </div>
+  <div class="col-xl-3"></div>
+  <div class="col-xl-6 mb-4">
+    <form action="{% url 'asset:history_activity' %}" method="get" class="form-inline">
+      <label class="sr-only" for="inlineFormInputName2">Ngày nhập</label>
+      <input type="text" class="form-control mb-2 mr-sm-2" id="inlineFormInputName2" name="datefilter" value=""
+        placeholder="Ngày nhập">
+      <button type="submit" class="btn btn-primary mb-2">Tìm kiếm</button>
+    </form>
+  </div>
+  <div class="col-xl-3"></div>
+</div>
+
+<div class="row">
+  <div class="col-xl-3"></div>
+  <div class="col-xl-6 mb-4">
+    <a class="btn btn-outline-secondary" href="{% url 'asset:history_activity' %}?input_date=last_7_days"
+      role="button">7 ngày trước</a>
+    <!-- <a class="btn btn-outline-secondary" href="{% url 'asset:history_activity' %}?input_date=last_30_days" role="button">30 ngày trước</a> -->
+    <a class="btn btn-outline-secondary" href="{% url 'asset:history_activity' %}?input_date=last_month"
+      role="button">Trong tháng trước</a>
+  </div>
+  <div class="col-xl-3"></div>
+</div>
+
+
+
+<div class="row">
+  <div class="col-xl-3"></div>
+  <div class="col-xl-6 mb-4">
+    <h5>Tổng quan</h5>
+  </div>
+  <div class="col-xl-3"></div>
+</div>
+
+<div class="row">
+  <div class="col-xl-3"></div>
+  <div class="col-xl-6 mb-4">
+    <canvas id="myChart"></canvas>
+  </div>
+  <div class="col-xl-3"></div>
+</div>
+
+<div class="row">
+  <div class="col-xl-3"></div>
+  <div class="col-xl-6 mb-4">
+    <h5>Danh sách chi tiết</h5>
+  </div>
+  <div class="col-xl-3"></div>
+</div>
+
+
+{% for activity in page_obj %}
+<div class="row">
+  <div class="col-xl-3"></div>
+  <div class="col-xl-6 mb-4">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="d-flex align-items-center">
+            <div class="ms-3">
+              <p class="fw-bold mb-1">{{activity.user.first_name}} {{activity.user.last_name}}</p>
+              <p class="text-muted mb-0">Số tiền: {{activity.amount}}</p>
+              <p class="text-muted mb-0">Danh mục: {{activity.category}}</p>
+              <p class="text-muted mb-0">Tại ngày: {{activity.input_date|date}}</p>
+              <p class="text-muted mb-0">Ghi chú: {{activity.notes}}</p>
             </div>
-            <span class="badge rounded-pill badge-success">Active</span>
           </div>
-        </div>
-        <div
-          class="card-footer border-0 bg-light p-2 d-flex justify-content-around"
-        >
-          <a
-            class="btn btn-link m-0 text-reset"
-            href="#"
-            role="button"
-            data-ripple-color="primary"
-            >Message<i class="fas fa-envelope ms-2"></i
-          ></a>
-          <a
-            class="btn btn-link m-0 text-reset"
-            href="#"
-            role="button"
-            data-ripple-color="primary"
-            >Call<i class="fas fa-phone ms-2"></i
-          ></a>
-        </div>
-      </div>
-    </div>
-    <div class="col-xl-6 mb-4">
-      <div class="card">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center">
-              <img
-                src="https://mdbootstrap.com/img/new/avatars/6.jpg"
-                alt=""
-                style="width: 45px; height: 45px"
-                class="rounded-circle"
-              />
-              <div class="ms-3">
-                <p class="fw-bold mb-1">Alex Ray</p>
-                <p class="text-muted mb-0">alex.ray@gmail.com</p>
-              </div>
-            </div>
-            <span class="badge rounded-pill badge-primary"
-              >Onboarding</span
-            >
-          </div>
-        </div>
-        <div
-          class="card-footer border-0 bg-light p-2 d-flex justify-content-around"
-        >
-          <a
-            class="btn btn-link m-0 text-reset"
-            href="#"
-            role="button"
-            data-ripple-color="primary"
-            >Message<i class="fas fa-envelope ms-2"></i
-          ></a>
-          <a
-            class="btn btn-link m-0 text-reset"
-            href="#"
-            role="button"
-            data-ripple-color="primary"
-            >Call<i class="fas fa-phone ms-2"></i
-          ></a>
-        </div>
-      </div>
-    </div>
-    <div class="col-xl-6 mb-4">
-      <div class="card">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center">
-              <img
-                src="https://mdbootstrap.com/img/new/avatars/7.jpg"
-                alt=""
-                style="width: 45px; height: 45px"
-                class="rounded-circle"
-              />
-              <div class="ms-3">
-                <p class="fw-bold mb-1">Kate Hunington</p>
-                <p class="text-muted mb-0">kate.hunington@gmail.com</p>
-              </div>
-            </div>
-            <span class="badge rounded-pill badge-warning">Awaiting</span>
-          </div>
-        </div>
-        <div
-          class="card-footer border-0 bg-light p-2 d-flex justify-content-around"
-        >
-          <a
-            class="btn btn-link m-0 text-reset"
-            href="#"
-            role="button"
-            data-ripple-color="primary"
-            >Message<i class="fas fa-envelope ms-2"></i
-          ></a>
-          <a
-            class="btn btn-link m-0 text-reset"
-            href="#"
-            role="button"
-            data-ripple-color="primary"
-            >Call<i class="fas fa-phone ms-2"></i
-          ></a>
-        </div>
-      </div>
-    </div>
-    <div class="col-xl-6 mb-4">
-      <div class="card">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center">
-              <img
-                src="https://mdbootstrap.com/img/new/avatars/3.jpg"
-                alt=""
-                style="width: 45px; height: 45px"
-                class="rounded-circle"
-              />
-              <div class="ms-3">
-                <p class="fw-bold mb-1">Michael Bale</p>
-                <p class="text-muted mb-0">michael.bale@gmail.com</p>
-              </div>
-            </div>
-            <span class="badge rounded-pill badge-danger">Removed</span>
-          </div>
-        </div>
-        <div
-          class="card-footer border-0 bg-light p-2 d-flex justify-content-around"
-        >
-          <a
-            class="btn btn-link m-0 text-reset"
-            href="#"
-            role="button"
-            data-ripple-color="primary"
-            >Message<i class="fas fa-envelope ms-2"></i
-          ></a>
-          <a
-            class="btn btn-link m-0 text-reset"
-            href="#"
-            role="button"
-            data-ripple-color="primary"
-            >Call<i class="fas fa-phone ms-2"></i
-          ></a>
+          {% if activity.activity_type == "INCOME" %}
+          <span class="badge badge-success">
+            THU NHẬP
+          </span>
+          {% else %}
+          <span class="badge badge-danger">
+            CHI TIÊU
+          </span>
+          {% endif %}
         </div>
       </div>
     </div>
   </div>
-
-{% for activity in page_obj %}
-{% endfor %} 
+  <div class="col-xl-3"></div>
+</div>
+{% endfor %}
 
 <div class="pagination">
-    <span class="step-links">
-        {% if page_obj.has_previous %}
-            <a href="?page=1">&laquo; first</a>
-            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
-        {% endif %}
+  <span class="step-links">
+    {% if page_obj.has_previous %}
+    <a href="?page=1">&laquo; first</a>
+    <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+    {% endif %}
 
-        <span class="current">
-            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-        </span>
-
-        {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}">next</a>
-            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
-        {% endif %}
+    <span class="current">
+      Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
     </span>
+
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}">next</a>
+    <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+    {% endif %}
+  </span>
 </div>
 
+<script src="{% static 'vendor/jquery/jquery-3.4.1.min.js' %}"></script>
+<script src="{% static 'vendor/momentjs/moment.min.js' %}"></script>
+<script src="{% static 'vendor/daterangepicker/js/daterangepicker.min.js' %}" defer></script>
+<link rel="stylesheet" type="text/css" href="{% static 'vendor/daterangepicker/css/daterangepicker.css' %}" />
 
+
+<script type="text/javascript">
+  $(function () {
+
+    $('input[name="datefilter"]').daterangepicker({
+      autoUpdateInput: false,
+      locale: {
+        cancelLabel: 'Clear',
+        format: "DD/MM/YYYY"
+      },
+
+    });
+
+    $('input[name="datefilter"]').on('apply.daterangepicker', function (ev, picker) {
+      $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+    });
+
+    $('input[name="datefilter"]').on('cancel.daterangepicker', function (ev, picker) {
+      $(this).val('');
+    });
+  });
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const ctx = document.getElementById('myChart').getContext('2d');
+
+  var chart_data = JSON.parse('{{ chart_data_json_str | safe}}');
+  // var chart_data = "{{chart_data | safe}}"
+  console.log(chart_data)
+
+  var labels = ["Thu nhập", "Chi phí"];
+  var data = {
+    labels: labels,
+    datasets: chart_data
+  }
+
+  const config = {
+    type: 'bar',
+    data: data,
+    options: {
+      plugins: {
+        title: {
+          display: true,
+          text: 'Thông kê'
+        },
+      },
+      responsive: true,
+      scales: {
+        x: {
+          stacked: true,
+        },
+        y: {
+          stacked: true
+        }
+      }
+    }
+  }
+
+  new Chart(ctx, config);
+</script>
 
 {% endblock %}

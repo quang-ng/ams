@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Any, Dict
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import FormView
@@ -7,6 +8,7 @@ from django.contrib import messages
 from djmoney.money import Money
 from django.conf import settings
 from django.views.generic import ListView
+from datetime import datetime, timedelta, date
 
 from asset.forms import InsertActivityForm
 from asset.models import ActivityCategory
@@ -16,6 +18,7 @@ from asset.models import Asset
 from asset.models import CASH
 from asset.models import Liability
 from accounts.models import MyUser
+from asset.forms import AssetLiquidationProcessForm
 
 
 def load_category(request):
@@ -42,6 +45,7 @@ class InsertActivityView(LoginRequiredMixin, FormView):
             .order_by("id")
             .first()
         )
+
         return initial
 
     def form_valid(self, form):
@@ -134,21 +138,81 @@ class InsertActivityView(LoginRequiredMixin, FormView):
 
 
 class ListActivityView(LoginRequiredMixin, ListView):
-    paginate_by = 20
+    paginate_by = 5
     model = Activity
     template_name = "asset/list_activity.html"
+    ordering = ["-input_date"]
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        queryset = self.get_queryset()
+
+        summary_data = {}
+        for activity in queryset:
+            if activity.category.name not in summary_data:
+                summary_data[activity.category.name] = {INCOME: 0, EXPENSE: 0}
+
+            summary_data[activity.category.name][activity.activity_type] += int(
+                activity.amount.amount
+            )
+
+        chart_data = []
+        for k, v in summary_data.items():
+            chart_data.append({"label": k, "data": [v[INCOME], v[EXPENSE]]})
+
+        import json
+
+        chart_data_json_str = json.dumps(chart_data)
+
+        print("CCC: ", chart_data_json_str)
+        context["chart_data_json_str"] = chart_data_json_str
+
+        return context
 
     def get_queryset(self):
         user = self.request.user
 
         users_in_family = MyUser.objects.filter(family=user.family)
-        from_date = self.request.GET.get("fromdate")
-        to_date = self.request.GET.get("todate")
-        self.queryset = Activity.objects.filter(user__in=users_in_family)
-        if from_date:
-            self.queryset.filter(from_date__gte=from_date)
-        if to_date:
-            self.queryset.filter(to_date__lte=to_date)
 
-        self.queryset.order_by("-created_at")
+        queryset = Activity.objects.filter(user__in=users_in_family).order_by(
+            "-input_date"
+        )
+
+        input_date_filter = self.request.GET.get("input_date")
+        datefilter = self.request.GET.get("datefilter")
+
+        if input_date_filter == "last_7_days":
+            queryset = queryset.filter(
+                input_date__gte=datetime.now() - timedelta(days=7)
+            )
+        elif input_date_filter == "last_30_days":
+            queryset = queryset.filter(
+                input_date__gte=datetime.now() - timedelta(days=30)
+            )
+        elif input_date_filter == "last_month":
+            last_day_of_prev_month = date.today().replace(day=1) - timedelta(days=1)
+            start_day_of_prev_month = date.today().replace(day=1) - timedelta(
+                days=last_day_of_prev_month.day
+            )
+            queryset = queryset.filter(
+                input_date__range=(start_day_of_prev_month, last_day_of_prev_month)
+            )
+
+        elif datefilter:
+            dates = self.request.GET.get("datefilter").split("-")
+            from_date = datetime.strptime(dates[0].strip(), "%d/%m/%Y")
+            to_date = datetime.strptime(dates[1].strip(), "%d/%m/%Y")
+            queryset = queryset.filter(input_date__range=(from_date, to_date))
+
+        self.queryset = queryset
         return self.queryset
+
+
+class AssetLiquidationProcessView(LoginRequiredMixin, FormView):
+    template_name = "asset/asset_liquidation_process.html"
+    form_class = AssetLiquidationProcessForm
+    
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs

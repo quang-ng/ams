@@ -86,7 +86,7 @@ class Activity(models.Model):
         default=EXPENSE,
     )
     category = models.ForeignKey(ActivityCategory, on_delete=models.CASCADE)
-    input_date = models.DateTimeField()
+    input_date = models.DateField()
     amount = MoneyField(max_digits=19, decimal_places=2, default_currency="VND")
 
     CREDIT_CARD = "CREDIT CARD"
