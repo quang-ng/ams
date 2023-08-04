@@ -102,5 +102,13 @@
             "name": "Khác",
             "activity_type": "INCOME"
         }
+    },
+    {
+        "model": "asset.ActivityCategory",
+        "pk": 14,
+        "fields": {
+            "name": "Đầu tư",
+            "activity_type": "EXPENSE"
+        }
     }
 ]

@@ -1,9 +1,8 @@
-from typing import Any, Mapping, Optional, Type, Union
 from django import forms
-from django.forms.utils import ErrorList
 from django.utils.translation import gettext_lazy as _
-from djmoney.models.fields import MoneyField
 from django.contrib.auth import get_user_model
+from django.db.models import Q
+from datetime import datetime
 
 from asset.models import Activity, ActivityCategory
 from asset.models import EXPENSE
@@ -12,6 +11,9 @@ from django.forms import Select
 from django.conf import settings
 from djmoney.forms import MoneyWidget
 from asset.models import Asset
+from asset.models import CASH
+from asset.models import ASSERT_CATEGORIES
+from asset.models import FUNDING_SOURCE_CATEGORIES
 
 User = get_user_model()
 
@@ -37,6 +39,21 @@ class NoCurrencyMoneyWidget(MoneyWidget):
         if val[1] is None:
             val[1] = settings.DEFAULT_CURRENCY
         return val
+
+
+class InvestmentForm(forms.Form):
+    investment_day = forms.DateField(
+        label="Ngày đầu tư", widget=forms.widgets.DateInput(attrs={"type": "date"})
+    )
+    investment_money = forms.CharField(label="Số tiền đầu tư")
+    asset_type = forms.CharField(
+        label="Loại tài sản đầu tư", widget=forms.Select(choices=ASSERT_CATEGORIES[1:])
+    )
+    funding_source = forms.CharField(
+        label="Nguồn tiền", widget=forms.Select(choices=FUNDING_SOURCE_CATEGORIES)
+    )
+
+    notes = forms.CharField(label="Ghi chú")
 
 
 class InsertActivityForm(forms.ModelForm):
@@ -82,11 +99,14 @@ class InsertActivityForm(forms.ModelForm):
             "notes": "Ghi chú",
         }
 
+
 class AssetLiquidationProcessForm(forms.Form):
     asset = forms.ModelChoiceField(queryset=None, label="Chọn tài sản muốn tất toán")
-    liquidation_value = forms.IntegerField(label="Số tiền thu về")
-    residual_value = forms.IntegerField(label="Giá trị tài sản còn lại")
+    liquidation_value = forms.CharField(label="Số tiền thu về")
+    residual_value = forms.CharField(label="Giá trị tài sản còn lại")
 
     def __init__(self, user, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['asset'].queryset = Asset.objects.filter(user=user)
+        self.fields["asset"].queryset = Asset.objects.filter(
+            Q(user=user), ~Q(category=CASH)
+        )

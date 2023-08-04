@@ -22,6 +22,18 @@ ASSERT_CATEGORIES = [
     (OTHERS, "Khác"),
 ]
 
+CREDIT_CARD = "CREDIT CARD"
+SHORT_TERM_DEBT = "SHORT-TERM DEBT"
+LONG_TERM_DEBT = "LONG-TERM DEBT"
+CASH = "CASH"
+
+FUNDING_SOURCE_CATEGORIES = [
+    (CASH, "Tiền mặt"),
+    (CREDIT_CARD, "Thẻ tín dụng"),
+    (SHORT_TERM_DEBT, "Khoản nợ ngắn hạn"),
+    (LONG_TERM_DEBT, "Khoản nợ giải hạn"),
+]
+
 
 class ActivityCategory(models.Model):
     name = models.TextField(max_length=200, blank=False)
@@ -89,18 +101,7 @@ class Activity(models.Model):
     input_date = models.DateField()
     amount = MoneyField(max_digits=19, decimal_places=2, default_currency="VND")
 
-    CREDIT_CARD = "CREDIT CARD"
-    SHORT_TERM_DEBT = "SHORT-TERM DEBT"
-    LONG_TERM_DEBT = "LONG-TERM DEBT"
-    CASH = "CASH"
-
-    FUNDING_SOURCE_CATEGORIES = [
-        (CASH, "Tiền mặt"),
-        (CREDIT_CARD, "Thẻ tín dụng"),
-        (SHORT_TERM_DEBT, "Khoản nợ ngắn hạn"),
-        (LONG_TERM_DEBT, "Khoản nợ giải hạn"),
-    ]
-
+    
     funding_sources = models.CharField(
         max_length=50,
         choices=FUNDING_SOURCE_CATEGORIES,
@@ -110,3 +111,28 @@ class Activity(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+class NetAssetHistory(models.Model):
+    user = models.ForeignKey(MyUser, on_delete=models.CASCADE)
+    month = models.DateField()
+    asset_amount = MoneyField(max_digits=19, decimal_places=2, default_currency="VND")
+    liability_amount = MoneyField(max_digits=19, decimal_places=2, default_currency="VND")
+
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def net_value(self):
+        return self.asset_amount - self.liability_amount
+    
+    def to_dict(self): 
+        return {
+            "month": self.month.strftime("%Y-%m"),
+            "asset": int(self.asset_amount.amount),
+            "liability": int(self.liability_amount.amount),
+            "net": int(self.net_value().amount)
+        }
+
+
+    
+

@@ -17,7 +17,7 @@
 
     <link rel="icon" href="{% static 'favicon.ico' %}">
 
-    <title>Simple Django Login and Registration</title>
+    <title>AMS</title>
 
     <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'css/styles.css' %}" rel="stylesheet">
@@ -44,6 +44,9 @@
                     </li>
                 {% endif %}
                 <li class="nav-item">
+                    <a class="nav-link" href="{% url 'asset:investment' %}">Đầu tư</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" href="{% url 'asset:history_activity' %}">Lịch sử giao dịch</a>
                 </li>
                 <li class="nav-item">
@@ -53,8 +56,9 @@
                     <a class="nav-link" href="#">Thanh toán nợ</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Thông tin tài sản và nợ</a>
+                    <a class="nav-link" href="{% url 'asset:net_asset_history' %}">Thông tin tài sản và nợ</a>
                 </li>
+                
                 <li class="nav-item dropdown mr-auto">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

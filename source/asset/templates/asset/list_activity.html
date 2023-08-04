@@ -152,8 +152,6 @@
   const ctx = document.getElementById('myChart').getContext('2d');
 
   var chart_data = JSON.parse('{{ chart_data_json_str | safe}}');
-  // var chart_data = "{{chart_data | safe}}"
-  console.log(chart_data)
 
   var labels = ["Thu nhập", "Chi phí"];
   var data = {

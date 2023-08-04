@@ -6,10 +6,21 @@
 {% block content %}
 
 
+
 <div class="row">
     <div class="col-xl-3"></div>
     <div class="col-xl-6 mb-4">
-        <form method="post" id="asset_liqudation_form" class="form-horizontal" novalidate>
+        <h4>Đầu tư</h4>
+    </div>
+    <div class="col-xl-3"></div>
+</div>
+
+
+<div class="row">
+    <div class="col-xl-3"></div>
+    <div class="col-xl-6 mb-4">
+        <form method="post" id="investment-form-id"
+            class="form-horizontal" novalidate>
 
             {% csrf_token %}
             {% bootstrap_form form %}
@@ -31,17 +42,23 @@
         // When ready.
         $(function () {
 
-            var $form = $("#asset_liqudation_form");
+            var $form = $("#investment-form-id");
             var $input = $form.find("input[type=text]");
 
             $input.on("keyup", function (event) {
-
-
+                
+                debugger
                 // When user select text in the document, also abort.
                 var selection = window.getSelection().toString();
                 if (selection !== '') {
                     return;
                 }
+
+                debugger
+                var $this = $(this);
+                if (this.id == "id_notes") return
+
+                console.log("selection:  ", selection)
 
                 // When the arrow keys are pressed, abort.
                 if ($.inArray(event.keyCode, [38, 40, 37, 39]) !== -1) {
@@ -49,7 +66,7 @@
                 }
 
 
-                var $this = $(this);
+                
 
                 // Get the value.
                 var input = $this.val();
@@ -68,6 +85,7 @@
              * ==================================
              */
             $form.on("submit", function (event) {
+                debugger
                 var rawNumber = $("input[type=text]").val().replace(/[($)\s\,_\-]+/g, '')
                 $("input[type=text]").val(rawNumber)
             });
@@ -76,5 +94,6 @@
     })(jQuery);
 
 </script>
+
 
 {% endblock %}
